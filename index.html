@@ -224,11 +224,124 @@
     }
 
     .month-label {
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
-      min-width: 90px;
+      min-width: 110px;
       text-align: center;
+      white-space: nowrap;
       text-transform: capitalize;
+    }
+
+    /* ---------- period toggle (semana / mes) ---------- */
+    .period-toggle {
+      display: inline-flex;
+      background: var(--surface-2);
+      border-radius: var(--radius-sm);
+      padding: 2px;
+      border: 1px solid var(--line);
+      flex: none;
+    }
+
+    .period-btn {
+      background: none;
+      border: none;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 8px;
+      color: var(--ink-soft);
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .period-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 1px 3px rgba(18, 20, 26, .08);
+    }
+
+    /* ---------- week strip (7 days) ---------- */
+    .week-strip {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-top: 14px;
+      padding: 8px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow);
+    }
+
+    .week-day {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 3px 6px;
+      border-radius: var(--radius-sm);
+      border: 1px solid transparent;
+      background: transparent;
+      cursor: pointer;
+      font-family: inherit;
+      color: var(--ink-soft);
+      transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+      position: relative;
+    }
+
+    .week-day:hover {
+      background: var(--surface-2);
+      color: var(--ink);
+    }
+
+    .week-day:active {
+      transform: scale(0.95);
+    }
+
+    .week-day.today {
+      border-color: var(--c-ahorro);
+    }
+
+    .week-day.selected {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .week-day.selected .wd-dow {
+      color: inherit;
+      opacity: 0.9;
+    }
+
+    .week-day .wd-dow {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      opacity: 0.8;
+    }
+
+    .week-day .wd-num {
+      font-size: 14px;
+      font-weight: 800;
+      margin-top: 3px;
+    }
+
+    .week-day .wd-dots {
+      display: flex;
+      gap: 2px;
+      margin-top: 4px;
+      height: 4px;
+    }
+
+    .week-day .wd-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+
+    .week-day.selected .wd-dots .wd-dot {
+      background: var(--bg) !important;
     }
 
     /* ---------- hero balance ---------- */
@@ -1259,11 +1372,15 @@
               <div class="sub" id="syncLabel">Guardado compartido activo</div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px;">
+          <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
+            <div class="period-toggle">
+              <button type="button" class="period-btn active" data-period="semana">Semana</button>
+              <button type="button" class="period-btn" data-period="mes">Mes</button>
+            </div>
             <div class="month-nav">
-              <button id="prevMonth" aria-label="Mes anterior">‹</button>
+              <button id="prevMonth" aria-label="Anterior">‹</button>
               <span class="month-label" id="monthLabel">—</span>
-              <button id="nextMonth" aria-label="Mes siguiente">›</button>
+              <button id="nextMonth" aria-label="Siguiente">›</button>
             </div>
             <button type="button" class="theme-toggle-btn" id="appbarThemeToggle" aria-label="Cambiar tema" title="Cambiar tema">
               <span class="ic-wrap" id="appbar-ic-theme"></span>
@@ -1273,10 +1390,16 @@
 
         <div class="desk-head">
           <h1 id="deskTitle">Inicio</h1>
-          <div class="month-nav">
-            <button id="prevMonthD" aria-label="Mes anterior">‹</button>
-            <span class="month-label" id="monthLabelD">—</span>
-            <button id="nextMonthD" aria-label="Mes siguiente">›</button>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="period-toggle">
+              <button type="button" class="period-btn active" data-period="semana">Semana</button>
+              <button type="button" class="period-btn" data-period="mes">Mes</button>
+            </div>
+            <div class="month-nav">
+              <button id="prevMonthD" aria-label="Anterior">‹</button>
+              <span class="month-label" id="monthLabelD">—</span>
+              <button id="nextMonthD" aria-label="Siguiente">›</button>
+            </div>
           </div>
         </div>
 
@@ -1286,7 +1409,7 @@
             <!-- ================= INICIO ================= -->
             <section class="panel active" id="panel-inicio">
               <div class="hero">
-                <div class="lbl">Balance libre de <span class="monthWord">este mes</span></div>
+                <div class="lbl">Balance libre de <span class="monthWord">esta semana</span></div>
                 <div class="amt num" id="heroAmt">$0.00</div>
                 <div class="hero-actions">
                   <button data-action="add"><span class="ic-wrap" id="ha-ic-add"></span>Agregar</button>
@@ -1296,14 +1419,17 @@
                 </div>
               </div>
 
+              <!-- Tira de 7 días de la semana -->
+              <div class="week-strip" id="weekStrip"></div>
+
               <div class="sect-head">
-                <h2>Resumen del mes</h2>
+                <h2 id="resumenTitle">Resumen de la semana</h2>
               </div>
               <div class="quick-grid" id="quickGrid"></div>
               <div class="plan-row" id="planRow"></div>
 
               <div class="sect-head">
-                <h2>Últimos movimientos</h2><button class="link" data-nav="movimientos">Ver todos</button>
+                <h2 id="homeTxTitle">Movimientos de la semana</h2><button class="link" id="homeTxAction" data-nav="movimientos">Ver todos</button>
               </div>
               <div class="card" style="padding:6px 12px;">
                 <ul class="tx-list" id="homeTxList"></ul>
@@ -1338,7 +1464,7 @@
             <!-- ================= ANALISIS ================= -->
             <section class="panel" id="panel-analisis">
               <div class="card">
-                <h2>Gasto total del mes<span class="hint">Fijos + variables + ahorro, sobre tus ingresos</span></h2>
+                <h2 id="analisisTitle">Gasto total de la semana<span class="hint" id="analisisHint">Fijos + variables + ahorro, sobre tus ingresos</span></h2>
                 <div class="amt num" id="analisisTotal" style="font-size:26px;font-weight:800;margin-top:10px;">$0.00
                 </div>
                 <div class="seg-bar" id="segBar"></div>
@@ -1407,7 +1533,13 @@
         <div class="field"><label>Descripción</label><input name="desc" id="f-desc"
             placeholder="Ej. Sueldo, Supermercado…" required></div>
         <div class="row2">
-          <div class="field"><label id="amountLabel">Monto</label><input name="amount" type="number" step="0.01" min="0"
+          <div class="field"><label>Monto en Bs (Opcional)</label><input type="number" step="0.01" id="f-bs"
+              placeholder="0.00"></div>
+          <div class="field"><label>Tasa (Bs por $)</label><input type="number" step="0.01" id="f-tasa"
+              placeholder="0.00"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label id="amountLabel">Monto</label><input name="amount" id="f-amount" type="number" step="0.01" min="0"
               placeholder="0.00" required></div>
           <div class="field"><label>¿Quién?</label>
             <select name="person">
@@ -1473,6 +1605,7 @@
       var MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
 
       var DIAS_CORTOS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+      var WD_SHORT = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
       function todayStr() { return monthKey(new Date()) + "-" + String(new Date().getDate()).padStart(2, "0"); }
 
@@ -1503,16 +1636,83 @@
         return null;
       }
 
+      function getMonday(d) {
+        d = new Date(d);
+        var day = d.getDay();
+        var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        d.setDate(diff);
+        d.setHours(0, 0, 0, 0);
+        return d;
+      }
+
+      function getSunday(monday) {
+        var sun = new Date(monday);
+        sun.setDate(sun.getDate() + 6);
+        sun.setHours(23, 59, 59, 999);
+        return sun;
+      }
+
+      function dateToIso(d) {
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+      }
+
+      function weekRange(monday) {
+        var sun = getSunday(monday);
+        return {
+          startIso: dateToIso(monday),
+          endIso: dateToIso(sun)
+        };
+      }
+
+      function weekLabelText(monday) {
+        var sun = getSunday(monday);
+        var mD = monday.getDate();
+        var sD = sun.getDate();
+        var mM = DIAS_CORTOS[monday.getMonth()];
+        var sM = DIAS_CORTOS[sun.getMonth()];
+        var mY = monday.getFullYear();
+        var sY = sun.getFullYear();
+        if (mY !== sY) {
+          return mD + " " + mM + " " + mY + " – " + sD + " " + sM + " " + sY;
+        }
+        if (monday.getMonth() === sun.getMonth()) {
+          return mD + " – " + sD + " " + sM + " " + sY;
+        } else {
+          return mD + " " + mM + " – " + sD + " " + sM + " " + sY;
+        }
+      }
+
       var state = {
         entries: [],
         goals: [],
+        period: "semana",
+        curMonday: getMonday(new Date()),
         curMonth: monthKey(new Date()),
         view: "inicio",
         filter: "todos",
         addType: "ingreso",
         calDay: todayStr(),
+        selectedDay: null,
         editingId: null
       };
+
+      function entriesForPeriod(type) {
+        if (state.period === "semana") {
+          var range = weekRange(state.curMonday);
+          return state.entries.filter(function (en) {
+            if (type && type !== "todos" && en.type !== type) return false;
+            var d = en.date || (en.month ? (en.month + "-01") : "");
+            if (!d) return false;
+            return d >= range.startIso && d <= range.endIso;
+          });
+        } else {
+          return state.entries.filter(function (en) {
+            if (type && type !== "todos" && en.type !== type) return false;
+            var m = en.month || (en.date ? en.date.slice(0, 7) : "");
+            return m === state.curMonth;
+          });
+        }
+      }
 
       function monthKey(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0"); }
       function fmt(n) { n = Number(n) || 0; return n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -1705,15 +1905,66 @@
         if (ab) { openModal(); }
       });
 
-      /* ---------------- month nav (mobile + desktop mirrored) ---------------- */
-      function shiftMonth(delta) {
-        var parts = state.curMonth.split("-").map(Number);
-        var d = new Date(parts[0], parts[1] - 1 + delta, 1);
-        state.curMonth = monthKey(d);
+      /* ---------------- period nav & buttons (mobile + desktop mirrored) ---------------- */
+      function shiftPeriod(delta) {
+        state.selectedDay = null;
+        if (state.period === "semana") {
+          var nextM = new Date(state.curMonday);
+          nextM.setDate(nextM.getDate() + delta * 7);
+          state.curMonday = nextM;
+          state.curMonth = monthKey(nextM);
+          var range = weekRange(nextM);
+          var today = todayStr();
+          if (today >= range.startIso && today <= range.endIso) {
+            state.calDay = today;
+          } else {
+            state.calDay = range.startIso;
+          }
+        } else {
+          var parts = state.curMonth.split("-").map(Number);
+          var d = new Date(parts[0], parts[1] - 1 + delta, 1);
+          state.curMonth = monthKey(d);
+          state.curMonday = getMonday(d);
+          var today2 = todayStr();
+          if (today2.slice(0, 7) === state.curMonth) {
+            state.calDay = today2;
+          } else {
+            state.calDay = state.curMonth + "-01";
+          }
+        }
         render();
       }
-      ["prevMonth", "prevMonthD"].forEach(function (id) { document.getElementById(id).addEventListener("click", function () { shiftMonth(-1); }); });
-      ["nextMonth", "nextMonthD"].forEach(function (id) { document.getElementById(id).addEventListener("click", function () { shiftMonth(1); }); });
+
+      function setPeriod(p) {
+        if (state.period === p) return;
+        state.period = p;
+        state.selectedDay = null;
+        if (p === "semana") {
+          var mParts = state.curMonth.split("-").map(Number);
+          var now = new Date();
+          if (now.getFullYear() === mParts[0] && (now.getMonth() + 1) === mParts[1]) {
+            state.curMonday = getMonday(now);
+          } else {
+            state.curMonday = getMonday(new Date(mParts[0], mParts[1] - 1, 1));
+          }
+        }
+        render();
+      }
+
+      ["prevMonth", "prevMonthD"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener("click", function () { shiftPeriod(-1); });
+      });
+      ["nextMonth", "nextMonthD"].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.addEventListener("click", function () { shiftPeriod(1); });
+      });
+
+      document.querySelectorAll(".period-btn").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          setPeriod(btn.dataset.period);
+        });
+      });
 
       /* ---------------- quick-add / edit modal ---------------- */
       var scrim = document.getElementById("addScrim");
@@ -1721,12 +1972,27 @@
         state.editingId = null;
         state.addType = type || state.addType || "ingreso";
         document.getElementById("entryForm").reset();
+        var fBs = document.getElementById("f-bs");
+        if (fBs) fBs.value = "";
+        var fTasa = document.getElementById("f-tasa");
+        if (fTasa) fTasa.value = "";
         renderTypeGrid();
         applyAddType();
         var fdate = document.getElementById("f-date");
-        var defIso = state.calDay && state.calDay.slice(0, 7) === state.curMonth
-          ? state.calDay
-          : (state.curMonth + "-" + (state.curMonth === monthKey(new Date()) ? String(new Date().getDate()).padStart(2, "0") : "01"));
+        var defIso;
+        if (state.period === "semana") {
+          if (state.selectedDay) {
+            defIso = state.selectedDay;
+          } else {
+            var range = weekRange(state.curMonday);
+            var today = todayStr();
+            defIso = (today >= range.startIso && today <= range.endIso) ? today : range.startIso;
+          }
+        } else {
+          defIso = state.calDay && state.calDay.slice(0, 7) === state.curMonth
+            ? state.calDay
+            : (state.curMonth + "-" + (state.curMonth === monthKey(new Date()) ? String(new Date().getDate()).padStart(2, "0") : "01"));
+        }
         if (fdate) {
           fdate.value = isoToDmy(defIso);
           fdate.setCustomValidity("");
@@ -1748,11 +2014,16 @@
         applyAddType();
 
         document.getElementById("f-desc").value = entry.desc || "";
-        var amtInput = document.querySelector('#entryForm input[name="amount"]');
+        var amtInput = document.getElementById("f-amount") || document.querySelector('#entryForm input[name="amount"]');
         if (amtInput) amtInput.value = entry.amount;
 
         var personSelect = document.querySelector('#entryForm select[name="person"]');
         if (personSelect) personSelect.value = entry.person || "Ambos";
+
+        var fBs = document.getElementById("f-bs");
+        if (fBs) fBs.value = "";
+        var fTasa = document.getElementById("f-tasa");
+        if (fTasa) fTasa.value = "";
 
         var fdate = document.getElementById("f-date");
         if (fdate) {
@@ -1771,6 +2042,8 @@
         state.editingId = null;
         scrim.classList.remove("open");
         document.getElementById("entryForm").reset();
+        document.getElementById("f-bs").value = "";
+        document.getElementById("f-tasa").value = "";
         var fdate = document.getElementById("f-date");
         if (fdate) fdate.setCustomValidity("");
       }
@@ -1779,6 +2052,28 @@
       scrim.addEventListener("click", function (e) { if (e.target === scrim) closeModal(); });
       document.getElementById("railAddBtn").addEventListener("click", function () { openModal(); });
       document.getElementById("tabAddBtn").addEventListener("click", function () { openModal(); });
+
+      // Calculadora automática de Bolívares a Dólares
+      function calcBsToUsd() {
+        var bsInput = document.getElementById("f-bs");
+        var tasaInput = document.getElementById("f-tasa");
+        var amountInput = document.getElementById("f-amount");
+        if (!bsInput || !tasaInput || !amountInput) return;
+
+        var bsVal = parseFloat(bsInput.value);
+        var tasaVal = parseFloat(tasaInput.value);
+
+        if (!isNaN(bsVal) && bsVal > 0 && !isNaN(tasaVal) && tasaVal > 0) {
+          var usd = Math.round((bsVal / tasaVal) * 100) / 100;
+          amountInput.value = usd.toFixed(2);
+        }
+      }
+
+      var fBsEl = document.getElementById("f-bs");
+      if (fBsEl) fBsEl.addEventListener("input", calcBsToUsd);
+
+      var fTasaEl = document.getElementById("f-tasa");
+      if (fTasaEl) fTasaEl.addEventListener("input", calcBsToUsd);
 
       // Enmascaramiento y validación para el campo de fecha DD/MM/AAAA
       var fdateInput = document.getElementById("f-date");
@@ -1983,15 +2278,30 @@
 
       /* ---------------- render ---------------- */
       function render() {
-        var mLabel = monthLabelText(state.curMonth);
-        ["monthLabel", "monthLabelD"].forEach(function (id) { document.getElementById(id).textContent = mLabel; });
-        document.querySelectorAll(".monthWord").forEach(function (el) { el.textContent = mLabel; });
+        var isWeek = state.period === "semana";
+        var mLabel = isWeek ? weekLabelText(state.curMonday) : monthLabelText(state.curMonth);
+        ["monthLabel", "monthLabelD"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (el) el.textContent = mLabel;
+        });
+        document.querySelectorAll(".monthWord").forEach(function (el) {
+          el.textContent = isWeek ? "esta semana" : ("el mes de " + monthLabelText(state.curMonth));
+        });
+        var rt = document.getElementById("resumenTitle");
+        if (rt) {
+          rt.textContent = isWeek ? "Resumen de la semana" : "Resumen del mes";
+        }
+
+        document.querySelectorAll(".period-btn").forEach(function (btn) {
+          btn.classList.toggle("active", btn.dataset.period === state.period);
+        });
 
         var totals = {};
-        CAT_ORDER.forEach(function (k) { totals[k] = sum(entriesForMonth(k, state.curMonth)); });
+        CAT_ORDER.forEach(function (k) { totals[k] = sum(entriesForPeriod(k)); });
         var balance = totals.ingreso - totals.ahorro - totals.fijo - totals.variable;
 
         renderHero(balance);
+        renderWeekStrip();
         renderQuickGrid(totals);
         renderPlanRow(totals);
         renderHomeTx();
@@ -2002,6 +2312,62 @@
         renderGoals();
         renderCalendar();
         ensureIcons();
+      }
+
+      /* ---------------- week strip (7 days) ---------------- */
+      function renderWeekStrip() {
+        var el = document.getElementById("weekStrip");
+        if (!el) return;
+        if (state.period !== "semana") {
+          el.style.display = "none";
+          return;
+        }
+        el.style.display = "grid";
+
+        var today = todayStr();
+        var daysHtml = [];
+        for (var i = 0; i < 7; i++) {
+          var d = new Date(state.curMonday);
+          d.setDate(d.getDate() + i);
+          var ds = dateToIso(d);
+          var dayEntries = entriesOnDay(ds);
+
+          var colors = [];
+          dayEntries.forEach(function (en) {
+            var col = CATS[en.type] ? CATS[en.type].color : "var(--c-fijo)";
+            if (colors.indexOf(col) === -1) colors.push(col);
+          });
+          var dotsHtml = colors.slice(0, 3).map(function (col) {
+            return '<span class="wd-dot" style="background:' + col + '"></span>';
+          }).join("");
+
+          var isToday = (ds === today);
+          var isSelected = (state.selectedDay === ds);
+          var cls = "week-day" + (isToday ? " today" : "") + (isSelected ? " selected" : "");
+
+          daysHtml.push(
+            '<button type="button" class="' + cls + '" data-wday="' + ds + '" title="' + dayLongLabel(ds) + '">' +
+              '<span class="wd-dow">' + WD_SHORT[i] + '</span>' +
+              '<span class="wd-num">' + d.getDate() + '</span>' +
+              '<span class="wd-dots">' + dotsHtml + '</span>' +
+            '</button>'
+          );
+        }
+        el.innerHTML = daysHtml.join("");
+        el.querySelectorAll("[data-wday]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            var clickedDay = btn.dataset.wday;
+            if (state.selectedDay === clickedDay) {
+              state.selectedDay = null;
+            } else {
+              state.selectedDay = clickedDay;
+            }
+            state.calDay = clickedDay;
+            renderWeekStrip();
+            renderHomeTx();
+            renderCalDay();
+          });
+        });
       }
 
       /* ---------------- calendar ---------------- */
@@ -2086,29 +2452,68 @@
       }
 
       function renderHomeTx() {
-        var all = state.entries.filter(function (en) {
-          if (CATS[en.type].scoped) return en.month === state.curMonth;
-          return true;
-        }).sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); }).slice(0, 6);
+        var isWeek = state.period === "semana";
+        var titleEl = document.getElementById("homeTxTitle");
+        var actionEl = document.getElementById("homeTxAction");
+
+        var all;
+        if (isWeek && state.selectedDay) {
+          all = entriesOnDay(state.selectedDay).sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
+          if (titleEl) titleEl.textContent = "Movimientos del " + formatDateHuman(state.selectedDay);
+          if (actionEl) {
+            actionEl.textContent = "Ver semana";
+            actionEl.onclick = function (e) {
+              e.preventDefault();
+              state.selectedDay = null;
+              renderWeekStrip();
+              renderHomeTx();
+            };
+            actionEl.removeAttribute("data-nav");
+          }
+        } else {
+          all = entriesForPeriod("todos")
+            .sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); })
+            .slice(0, 8);
+          if (titleEl) titleEl.textContent = isWeek ? "Movimientos de la semana" : "Movimientos del mes";
+          if (actionEl) {
+            actionEl.textContent = "Ver todos";
+            actionEl.onclick = null;
+            actionEl.setAttribute("data-nav", "movimientos");
+          }
+        }
+
         var el = document.getElementById("homeTxList");
-        el.innerHTML = all.length ? all.map(function (en) { return txRow(en, true); }).join("") : '<li class="empty">Aún no hay movimientos registrados.</li>';
+        var emptyMsg = (isWeek && state.selectedDay)
+          ? "Sin movimientos registrados este día."
+          : (isWeek ? "Aún no hay movimientos registrados esta semana." : "Aún no hay movimientos registrados este mes.");
+        el.innerHTML = all.length ? all.map(function (en) { return txRow(en, true); }).join("") : '<li class="empty">' + emptyMsg + '</li>';
         wireTxActions(el);
       }
 
       function renderMovList() {
         var list;
         if (state.filter === "todos") {
-          list = state.entries.filter(function (en) { return CATS[en.type].scoped ? en.month === state.curMonth : true; });
+          list = entriesForPeriod("todos");
         } else {
-          list = entriesForMonth(state.filter, state.curMonth);
+          list = entriesForPeriod(state.filter);
         }
         list = list.slice().sort(function (a, b) { return (b.createdAt || 0) - (a.createdAt || 0); });
         var el = document.getElementById("movTxList");
-        el.innerHTML = list.length ? list.map(function (en) { return txRow(en, true); }).join("") : '<li class="empty">No hay movimientos en esta categoría.</li>';
+        var emptyMsg = state.period === "semana"
+          ? "No hay movimientos registrados en esta semana."
+          : "No hay movimientos registrados en este mes.";
+        el.innerHTML = list.length ? list.map(function (en) { return txRow(en, true); }).join("") : '<li class="empty">' + emptyMsg + '</li>';
         wireDeletes(el);
       }
 
       function renderAnalysis(totals, balance) {
+        var isWeek = state.period === "semana";
+        var atTitle = document.getElementById("analisisTitle");
+        if (atTitle) {
+          atTitle.innerHTML = (isWeek ? "Gasto total de la semana" : "Gasto total del mes") +
+            '<span class="hint" id="analisisHint">Fijos + variables + ahorro, sobre tus ingresos</span>';
+        }
+
         var spendKeys = ["fijo", "variable", "ahorro"];
         var total = spendKeys.reduce(function (a, k) { return a + totals[k]; }, 0);
         document.getElementById("analisisTotal").textContent = "$" + fmt(total);
