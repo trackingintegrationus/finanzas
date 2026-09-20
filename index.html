@@ -898,6 +898,129 @@
       font-weight: 800;
     }
 
+    /* ---------- deseos (wishlist) ---------- */
+    .wish-total {
+      border-radius: var(--radius-lg);
+      padding: 18px 20px;
+      background: linear-gradient(135deg, #191B22, #2A2F3B 60%, #33283F);
+      color: #fff;
+      box-shadow: var(--shadow);
+      margin-top: 12px;
+    }
+
+    .wish-total .lbl {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .65);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .wish-total .amt {
+      font-size: 30px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    .wish-group-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 18px 0 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--ink-soft);
+    }
+
+    .wish-group-head .sw {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex: none;
+    }
+
+    ul.wish-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    ul.wish-list li {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 11px 2px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    ul.wish-list li:last-child {
+      border-bottom: none;
+    }
+
+    .wish-check {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1.6px solid var(--line);
+      background: var(--surface);
+      color: var(--ink-faint);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex: none;
+      transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .wish-check svg.ic {
+      width: 15px;
+      height: 15px;
+    }
+
+    .wish-item.done .wish-check {
+      background: var(--c-ahorro);
+      border-color: var(--c-ahorro);
+      color: #fff;
+    }
+
+    .wish-main {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .wish-desc {
+      font-size: 13.5px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .wish-item.done .wish-desc {
+      text-decoration: line-through;
+      color: var(--ink-faint);
+    }
+
+    .wish-meta {
+      font-size: 11px;
+      color: var(--ink-soft);
+      margin-top: 1px;
+    }
+
+    .wish-amt {
+      font-weight: 800;
+      font-size: 13.5px;
+      flex: none;
+      color: var(--ink);
+    }
+
+    .wish-item.done .wish-amt {
+      color: var(--ink-faint);
+      text-decoration: line-through;
+    }
+
     /* ---------- forms ---------- */
     form .field {
       margin-top: 10px;
@@ -1357,6 +1480,7 @@
       <button data-nav="calendario"><span class="ic-wrap" id="rail-ic-calendario"></span>Calendario</button>
       <button data-nav="analisis"><span class="ic-wrap" id="rail-ic-analisis"></span>Análisis</button>
       <button data-nav="metas"><span class="ic-wrap" id="rail-ic-metas"></span>Metas</button>
+      <button data-nav="deseos"><span class="ic-wrap" id="rail-ic-deseos"></span>Deseos</button>
       <button class="fab-rail" id="railAddBtn"><span class="ic-wrap" id="rail-ic-add"></span>Agregar movimiento</button>
       <button type="button" class="theme-rail-btn" id="railThemeToggle" aria-label="Cambiar tema" title="Cambiar tema"><span class="ic-wrap" id="rail-ic-theme"></span><span id="railThemeLabel">Tema oscuro</span></button>
     </aside>
@@ -1502,6 +1626,41 @@
               <div id="goalsList"></div>
             </section>
 
+            <!-- ================= DESEOS ================= -->
+            <section class="panel" id="panel-deseos">
+              <div class="card">
+                <h2>Nuevo deseo<span class="hint">Cosas por comprar que quieren cumplirse, cada uno o entre ambos</span></h2>
+                <form id="wishForm">
+                  <div class="field"><label>Descripción</label><input name="desc" placeholder="Ej. Audífonos nuevos" required></div>
+                  <div class="row2">
+                    <div class="field"><label>Precio estimado</label><input name="price" type="number" step="0.01" min="0" placeholder="0.00" required></div>
+                    <div class="field"><label>¿Quién lo desea?</label>
+                      <select name="person">
+                        <option>Ambos</option>
+                        <option>Franlesca</option>
+                        <option>Luis</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button class="submit" type="submit">Agregar deseo</button>
+                </form>
+              </div>
+
+              <div class="wish-total">
+                <div class="lbl">Total por cumplir (pendientes)</div>
+                <div class="amt num" id="wishPendingTotal">$0.00</div>
+              </div>
+
+              <div id="wishPendingLists"></div>
+
+              <div class="sect-head">
+                <h2>Deseos cumplidos</h2>
+              </div>
+              <div class="card" style="padding:6px 12px;">
+                <ul class="wish-list" id="wishDoneList"></ul>
+              </div>
+            </section>
+
           </div>
           <div id="rightCol"></div>
         </div>
@@ -1519,6 +1678,7 @@
     <button class="fab" id="tabAddBtn"><span class="ic-wrap" id="tb-ic-add"></span></button>
     <button data-nav="analisis"><span class="ic-wrap" id="tb-ic-an"></span>Análisis</button>
     <button data-nav="metas"><span class="ic-wrap" id="tb-ic-metas"></span>Metas</button>
+    <button data-nav="deseos"><span class="ic-wrap" id="tb-ic-deseos"></span>Deseos</button>
   </nav>
 
   <!-- QUICK ADD MODAL -->
@@ -1589,7 +1749,9 @@
         calendar: '<svg class="ic" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.2"/><path d="M3.5 9.5h17"/><path d="M8 3v4M16 3v4"/></svg>',
         sun: '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>',
         moon: '<svg class="ic" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
-        edit: '<svg class="ic" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>'
+        edit: '<svg class="ic" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
+        heart: '<svg class="ic" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-10-9.3C.4 8.3 2 4.5 5.8 4c2-.3 3.9.7 6.2 3 2.3-2.3 4.2-3.3 6.2-3 3.8.5 5.4 4.3 3.8 7.7C19.5 16.4 12 21 12 21z"/></svg>',
+        check: '<svg class="ic" viewBox="0 0 24 24"><path d="M5 12.5 10 17l9-10"/></svg>'
       };
       var TAB_ICON = { inicio: "home", movimientos: "list", analisis: "chart", metas: "target", calendario: "calendar" };
 
@@ -1685,6 +1847,7 @@
       var state = {
         entries: [],
         goals: [],
+        wishes: [],
         period: "semana",
         curMonday: getMonday(new Date()),
         curMonth: monthKey(new Date()),
@@ -1737,8 +1900,8 @@
       var SUPABASE_ANON_KEY = "sb_publishable_ZUNS46RGVuQSBJVuhBztXA_ewhX30CQ";
       var sb = null;
       var LS_KEY = "finanzas_pareja_v1";
-      function loadLocal() { try { var raw = localStorage.getItem(LS_KEY); if (raw) { var d = JSON.parse(raw); state.entries = d.entries || []; state.goals = d.goals || []; } } catch (e) { } }
-      function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify({ entries: state.entries, goals: state.goals })); } catch (e) { } }
+      function loadLocal() { try { var raw = localStorage.getItem(LS_KEY); if (raw) { var d = JSON.parse(raw); state.entries = d.entries || []; state.goals = d.goals || []; state.wishes = d.wishes || []; } } catch (e) { } }
+      function saveLocal() { try { localStorage.setItem(LS_KEY, JSON.stringify({ entries: state.entries, goals: state.goals, wishes: state.wishes })); } catch (e) { } }
       function setSync(t) { var el = document.getElementById("syncLabel"); if (el) el.textContent = t; }
 
       // Al llegar una foto nueva del servidor, no la reemplazamos a ciegas: eso puede
@@ -1757,6 +1920,12 @@
         var keepLocal = state.goals.filter(function (g) { return !incomingIds[g.id] && (now - (g.createdAt || 0) < 6000); });
         state.goals = incoming.concat(keepLocal);
       }
+      function reconcileWishes(incoming) {
+        var now = Date.now();
+        var incomingIds = {}; incoming.forEach(function (w) { incomingIds[w.id] = true; });
+        var keepLocal = state.wishes.filter(function (w) { return !incomingIds[w.id] && (now - (w.createdAt || 0) < 6000); });
+        state.wishes = incoming.concat(keepLocal);
+      }
 
       function rowToEntry(r) {
         return {
@@ -1772,6 +1941,8 @@
       }
       function rowToGoal(r) { return { id: r.id, title: r.title, target: Number(r.target), due: r.due, createdAt: r.created_at ? new Date(r.created_at).getTime() : Date.now() }; }
       function goalToRow(g) { return { id: g.id, title: g.title, target: g.target, due: g.due }; }
+      function rowToWish(r) { return { id: r.id, desc: r.desc, price: Number(r.price), person: r.person || "Ambos", done: !!r.done, createdAt: r.created_at ? new Date(r.created_at).getTime() : Date.now() }; }
+      function wishToRow(w) { return { id: w.id, desc: w.desc, price: w.price, person: w.person, done: !!w.done }; }
 
       async function initPersistence() {
         loadLocal(); render();
@@ -1785,8 +1956,10 @@
         try {
           var er = await sb.from("entries").select("*").order("created_at", { ascending: true });
           var gr = await sb.from("goals").select("*").order("created_at", { ascending: true });
+          var wr = await sb.from("wishes").select("*").order("created_at", { ascending: true });
           if (er.data) state.entries = er.data.map(rowToEntry);
           if (gr.data) state.goals = gr.data.map(rowToGoal);
+          if (wr.data) state.wishes = wr.data.map(rowToWish);
           saveLocal(); render();
         } catch (e) { }
         try {
@@ -1795,6 +1968,9 @@
             .subscribe();
           sb.channel("public:goals")
             .on("postgres_changes", { event: "*", schema: "public", table: "goals" }, function () { refetchGoals(); })
+            .subscribe();
+          sb.channel("public:wishes")
+            .on("postgres_changes", { event: "*", schema: "public", table: "wishes" }, function () { refetchWishes(); })
             .subscribe();
           setSync("Guardado compartido activo");
         } catch (e) { setSync("Guardado compartido activo"); }
@@ -1809,10 +1985,24 @@
         var r = await sb.from("goals").select("*").order("created_at", { ascending: true });
         if (r.data) { reconcileGoals(r.data.map(rowToGoal)); saveLocal(); render(); }
       }
+      async function refetchWishes() {
+        if (!sb) return;
+        var r = await sb.from("wishes").select("*").order("created_at", { ascending: true });
+        if (r.data) { reconcileWishes(r.data.map(rowToWish)); saveLocal(); render(); }
+      }
       async function persistEntry(entry) { saveLocal(); if (sb) { try { await sb.from("entries").upsert(entryToRow(entry)); } catch (e) { } } }
       async function persistDeleteEntry(id) { state.entries = state.entries.filter(function (e) { return e.id !== id; }); saveLocal(); render(); if (sb) { try { await sb.from("entries").delete().eq("id", id); } catch (e) { } } }
       async function persistGoal(goal) { saveLocal(); if (sb) { try { await sb.from("goals").upsert(goalToRow(goal)); } catch (e) { } } }
       async function persistDeleteGoal(id) { state.goals = state.goals.filter(function (g) { return g.id !== id; }); saveLocal(); render(); if (sb) { try { await sb.from("goals").delete().eq("id", id); } catch (e) { } } }
+      async function persistWish(wish) { saveLocal(); if (sb) { try { await sb.from("wishes").upsert(wishToRow(wish)); } catch (e) { } } }
+      async function persistToggleWish(id) {
+        var wish = state.wishes.find(function (w) { return w.id === id; });
+        if (!wish) return;
+        wish.done = !wish.done;
+        saveLocal(); render();
+        if (sb) { try { await sb.from("wishes").update({ done: wish.done }).eq("id", id); } catch (e) { } }
+      }
+      async function persistDeleteWish(id) { state.wishes = state.wishes.filter(function (w) { return w.id !== id; }); saveLocal(); render(); if (sb) { try { await sb.from("wishes").delete().eq("id", id); } catch (e) { } } }
 
       /* ---------------- navigation ---------------- */
       function goto(view) {
@@ -1841,7 +2031,8 @@
           movimientos: "Movimientos",
           calendario: "Calendario",
           analisis: "Análisis",
-          metas: "Metas"
+          metas: "Metas",
+          deseos: "Deseos"
         };
         var dt = document.getElementById("deskTitle");
         if (dt && titles[view]) {
@@ -2215,6 +2406,22 @@
         state.goals.push(goal); persistGoal(goal); e.target.reset(); render();
       });
 
+      /* ---------------- wish form ---------------- */
+      var wishFormEl = document.getElementById("wishForm");
+      if (wishFormEl) {
+        wishFormEl.addEventListener("submit", function (e) {
+          e.preventDefault();
+          var fd = new FormData(e.target);
+          var wish = {
+            id: uid(), desc: (fd.get("desc") || "").toString().trim(),
+            price: parseFloat(fd.get("price")) || 0, person: fd.get("person") || "Ambos",
+            done: false, createdAt: Date.now()
+          };
+          if (!wish.desc || wish.price <= 0) return;
+          state.wishes.push(wish); persistWish(wish); e.target.reset(); render();
+        });
+      }
+
       /* ---------------- computed ---------------- */
       function entriesForMonth(type, month) {
         return state.entries.filter(function (en) {
@@ -2310,6 +2517,7 @@
         renderAnalysis(totals, balance);
         renderProjection();
         renderGoals();
+        renderWishes();
         renderCalendar();
         ensureIcons();
       }
@@ -2552,6 +2760,54 @@
         el.querySelectorAll("[data-gid]").forEach(function (btn) { btn.addEventListener("click", function () { persistDeleteGoal(btn.dataset.gid); }); });
       }
 
+      /* ---------------- deseos (wishlist) ---------------- */
+      function wishRow(w) {
+        var meta = (w.person || "Ambos");
+        return '<li class="wish-item' + (w.done ? " done" : "") + '" data-wid="' + w.id + '">' +
+          '<button type="button" class="wish-check" data-toggle="' + w.id + '" aria-label="Marcar como cumplido" title="Marcar como cumplido">' + ICONS.check + '</button>' +
+          '<div class="wish-main"><div class="wish-desc">' + escapeHtml(w.desc) + '</div><div class="wish-meta">' + escapeHtml(meta) + '</div></div>' +
+          '<span class="wish-amt num">$' + fmt(w.price) + '</span>' +
+          '<div class="tx-actions"><button class="tx-del" data-wdel="' + w.id + '" aria-label="Eliminar deseo" title="Eliminar">✕</button></div>' +
+          '</li>';
+      }
+      function wireWishActions(container) {
+        if (!container) return;
+        container.querySelectorAll("[data-toggle]").forEach(function (btn) {
+          btn.addEventListener("click", function (e) { e.stopPropagation(); persistToggleWish(btn.dataset.toggle); });
+        });
+        container.querySelectorAll("[data-wdel]").forEach(function (btn) {
+          btn.addEventListener("click", function (e) { e.stopPropagation(); persistDeleteWish(btn.dataset.wdel); });
+        });
+      }
+      function renderWishes() {
+        var pendingTotalEl = document.getElementById("wishPendingTotal");
+        if (!pendingTotalEl) return; // panel no presente
+        var pending = state.wishes.filter(function (w) { return !w.done; });
+        var done = state.wishes.filter(function (w) { return w.done; });
+        pendingTotalEl.textContent = "$" + fmt(sum(pending.map(function (w) { return { amount: w.price }; })));
+
+        var groups = ["Franlesca", "Luis", "Ambos"];
+        var listsEl = document.getElementById("wishPendingLists");
+        var html = "";
+        groups.forEach(function (g) {
+          var list = pending.filter(function (w) { return (w.person || "Ambos") === g; });
+          if (!list.length) return;
+          var color = g === "Franlesca" ? "var(--c-ahorro)" : (g === "Luis" ? "var(--c-variable)" : "var(--ink-soft)");
+          html += '<div class="wish-group-head"><span class="sw" style="background:' + color + '"></span>' + g + '</div>' +
+            '<div class="card" style="padding:6px 12px;"><ul class="wish-list" data-group="' + g + '">' +
+            list.map(wishRow).join("") + '</ul></div>';
+        });
+        if (!pending.length) {
+          html = '<p class="empty">No hay deseos pendientes. Agreguen el primero arriba.</p>';
+        }
+        listsEl.innerHTML = html;
+        wireWishActions(listsEl);
+
+        var doneEl = document.getElementById("wishDoneList");
+        doneEl.innerHTML = done.length ? done.map(wishRow).join("") : '<li class="empty">Aún no han cumplido ningún deseo.</li>';
+        wireWishActions(doneEl);
+      }
+
       function renderProjection() {
         var months = []; var d0 = state.curMonth.split("-").map(Number);
         for (var i = 5; i >= 0; i--) { var d = new Date(d0[0], d0[1] - 1 - i, 1); months.push(monthKey(d)); }
@@ -2583,12 +2839,14 @@
         document.getElementById("rail-ic-calendario").innerHTML = ICONS.calendar;
         document.getElementById("rail-ic-analisis").innerHTML = ICONS.chart;
         document.getElementById("rail-ic-metas").innerHTML = ICONS.target;
+        if (document.getElementById("rail-ic-deseos")) document.getElementById("rail-ic-deseos").innerHTML = ICONS.heart;
         document.getElementById("rail-ic-add").innerHTML = ICONS.plus;
         document.getElementById("tb-ic-inicio").innerHTML = ICONS.home;
         document.getElementById("tb-ic-mov").innerHTML = ICONS.list;
         document.getElementById("tb-ic-cal").innerHTML = ICONS.calendar;
         if (document.getElementById("tb-ic-an")) document.getElementById("tb-ic-an").innerHTML = ICONS.chart;
         document.getElementById("tb-ic-metas").innerHTML = ICONS.target;
+        if (document.getElementById("tb-ic-deseos")) document.getElementById("tb-ic-deseos").innerHTML = ICONS.heart;
         document.getElementById("tb-ic-add").innerHTML = ICONS.plus;
         document.getElementById("ha-ic-add").innerHTML = ICONS.plus;
         document.getElementById("ha-ic-mov").innerHTML = ICONS.move;
